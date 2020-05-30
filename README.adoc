@@ -7,9 +7,19 @@
 image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Ruby/badge.svg?branch=master[Build Status]
 image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Rubocop/badge.svg[Rubocop Status]
 
+== Design
+
+=== Structure
+
+image:design/uml-structure.png[UML Structure]
+
+=== Sequence
+
+image:design/uml-sequence.png[UML Sequence]
+
 == License
 
-Copyright 2020 https://reinvent.one/[ReinventONE, Inc.].
+© 2020 https://reinvent.one/[ReinventONE, Inc.].
 Read xref:LICENSE.adoc[LICENSE] for details.
 
 == Credits
