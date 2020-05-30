@@ -1,0 +1,18 @@
+= Cloud Kitchens Dispatch
+:doctype: book
+:toc:
+:toclevels: 5
+:sectnums:
+
+image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Ruby/badge.svg?branch=master[Build Status]
+image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Rubocop/badge.svg[Rubocop Status]
+
+== License
+
+Copyright 2020 https://reinvent.one/[ReinventONE, Inc.].
+Read xref:LICENSE.adoc[LICENSE] for details.
+
+== Credits
+
+Developed by http://kig.re/[Konstantin Gredeskoul] at
+https://reinvent.one/[ReinventONE, Inc.].
