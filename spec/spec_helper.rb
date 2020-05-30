@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
-require "bundler/setup"
+require 'rspec'
+require 'rspec/its'
+require 'simplecov'
 
-require "simplecov"
 SimpleCov.start { enable_coverage :branch }
 
 require "cloud/kitchens/dispatch"
-
-Dir[File.join(__dir__, "support", "shared_contexts", "**/*.rb")].each(&method(:require))
 
 RSpec.configure do |config|
   config.color = true
   config.disable_monkey_patching!
   config.example_status_persistence_file_path = "./tmp/rspec-examples.txt"
   config.filter_run_when_matching :focus
-  config.formatter = ENV["CI"] == "true" ? :progress : :documentation
+  config.formatter = :progress
   config.order = :random
   config.shared_context_metadata_behavior = :apply_to_host_groups
   config.warnings = true

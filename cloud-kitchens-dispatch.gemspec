@@ -22,16 +22,19 @@ Gem::Specification.new do |spec|
   spec.cert_chain = [Gem.default_cert_path]
 
   spec.add_dependency 'dry-cli'
+  spec.add_dependency 'dry-initializer'
+  spec.add_dependency 'dry-struct'
+  spec.add_dependency 'dry-types'
 
+  spec.add_development_dependency 'asciidoctor'
+  spec.add_development_dependency 'codecov'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'codecov'
   spec.add_development_dependency 'yard'
-  spec.add_development_dependency 'asciidoctor'
 
   spec.files = Dir['lib/**/*']
   spec.extra_rdoc_files = Dir['README*', 'LICENSE*']
