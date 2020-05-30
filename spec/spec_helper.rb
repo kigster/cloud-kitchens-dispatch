@@ -2,7 +2,13 @@
 
 require 'rspec'
 require 'rspec/its'
+
 require 'simplecov'
+
+if ENV['CI']
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
 
 SimpleCov.start { enable_coverage :branch }
 

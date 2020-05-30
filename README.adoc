@@ -6,6 +6,7 @@
 
 image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Ruby/badge.svg?branch=master[Build Status]
 image:https://github.com/kigster/cloud-kitchens-dispatch/workflows/Rubocop/badge.svg[Rubocop Status]
+image:https://codecov.io/gh/kigster/cloud-kitchens-dispatch/branch/master/graph/badge.svg?token=IASOaLWXsT[Coverage,link=https://codecov.io/gh/kigster/cloud-kitchens-dispatch]
 
 == Design
 
