@@ -5,8 +5,10 @@ require_relative 'abstract_order_event'
 
 module Cloud
   module Kitchens
-    module Events
-      class OrderPickedUpEvent < AbstractEvent
+    module Dispatch
+      module Events
+        class OrderPickedUpEvent < AbstractOrderEvent
+        end
       end
     end
   end

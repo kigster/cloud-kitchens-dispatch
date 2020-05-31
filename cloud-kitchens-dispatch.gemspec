@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.cert_chain = [Gem.default_cert_path]
 
   spec.add_dependency 'aasm'
+  spec.add_dependency 'activesupport'
   spec.add_dependency 'dry-cli'
   spec.add_dependency 'dry-configurable'
   spec.add_dependency 'dry-initializer'
@@ -30,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'pastel'
   spec.add_dependency 'tty-box'
   spec.add_dependency 'tty-font'
+  spec.add_dependency 'tty-logger'
   spec.add_dependency 'tty-screen'
   spec.add_dependency 'tty-table'
   spec.add_dependency 'tty-tree'

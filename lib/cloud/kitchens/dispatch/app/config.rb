@@ -10,9 +10,15 @@ module Cloud
           extend ::Dry::Configurable
 
           setting :total, reader: true do
-            # Can pass a default value
             setting :couriers
             setting :shelf_capacity, 10
+          end
+
+          setting :logging, reader: true do
+            setting :loglevel, default: :debug
+            setting :logfile, default: nil
+            setting :quiet, default: false
+            setting :trace, default: false
           end
 
           setting :incoming_orders_per_second, 2

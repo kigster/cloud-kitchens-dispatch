@@ -4,33 +4,35 @@ require 'ventable'
 
 module Cloud
   module Kitchens
-    module Events
-      class << self
-        def transaction
-          @transaction ||= ->(b) {
-            ActiveRecord::Base.transaction do
-              b.call
-            end
-          }
-        end
-
-        def event_logger; end
-      end
-
-      class AbstractOrderEvent
-        attr_reader :order
-
-        def initialize(order)
-          @order = order
-        end
+    module Dispatch
+      module Events
+        include Dispatch::Logging
 
         class << self
-          def inherited(base)
-            base.instance_eval do
-              include Ventable::Event
-              group :transaction, ::Cloud::Kitchens::Events.transaction
+          include Dispatch::Logging
 
-              notifies ->(event) { metrics.handle_event(event) }
+          def transaction
+            @transaction ||= ->(b) {
+              b.call
+            }
+          end
+        end
+
+        class AbstractOrderEvent
+          attr_reader :order, :producer
+
+          def initialize(order, producer)
+            @order    = order
+            @producer = (producer.is_a?(Class) ? producer.name : producer.class.name).gsub(/.*::/, '').underscore
+          end
+
+          class << self
+            def inherited(base)
+              base.instance_eval do
+                include Ventable::Event
+
+                notifies ->(event) { ::Cloud::Kitchens::Dispatch.log_event(event) }
+              end
             end
           end
         end

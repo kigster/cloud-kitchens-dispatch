@@ -7,5 +7,18 @@ $LOAD_PATH << lib_path if Dir.exist?(lib_path)
 require "cloud/kitchens/dispatch"
 require "cloud/kitchens/dispatch/identity"
 require "cloud/kitchens/dispatch/app/commands"
+require "cloud/kitchens/dispatch/logging"
+require "cloud/kitchens/dispatch/events/abstract_order_event"
+require "cloud/kitchens/dispatch/events/order_ready_event"
+require 'ventable'
 
-Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands).call
+class App
+  include ::Cloud::Kitchens::Dispatch::Logging
+
+  def run
+    # noinspection RubyYardParamTypeMatch
+    ::Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands).call
+  end
+end
+
+App.new.run

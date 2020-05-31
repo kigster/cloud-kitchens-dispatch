@@ -9,16 +9,22 @@ module Cloud
     module Dispatch
       # Gem identity information.
       class OrderStruct < ::Dry::Struct
+        transform_keys(&:to_sym)
+
         attribute :id, Types::String
         attribute :name, Types::String
-        attribute :temperature, Types::Temperature
-        attribute :state, Types::OrderState
-        attribute :shelf_life, Types::Integer
-        attribute :decay_rate, Types::Float
-        attribute :received_at, Types::DateTime.default(DateTime.now.freeze)
-        attribute :ready_at, Types::DateTime.optional
-        attribute :picked_up_at, Types::DateTime.optional
-        attribute :delivered_at, Types::DateTime.optional
+        attribute :temp, Types::String # Types::Temperature
+        # attribute :state, Types::String # OrderState
+        attribute :shelfLife, Types::Integer
+        attribute :decayRate, Types::Float
+        # attribute :received_at, Types::DateTime.default(DateTime.now.freeze)
+        # attribute :ready_at, Types::DateTime.optional
+        # attribute :picked_up_at, Types::DateTime.optional
+        # attribute :delivered_at, Types::DateTime.optional
+        #
+        def to_s
+          to_h.inspect
+        end
       end
     end
   end

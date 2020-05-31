@@ -6,7 +6,7 @@ module Cloud
   module Kitchens
     RSpec.describe Dispatch, reset_config: true do
       context '.config' do
-        subject { described_class.config }
+        subject { described_class.app_config }
 
         its(:incoming_orders_per_second) { is_expected.to eq 2 }
       end
