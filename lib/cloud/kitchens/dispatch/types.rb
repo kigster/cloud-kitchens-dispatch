@@ -4,7 +4,6 @@ require 'dry-types'
 require 'dry-struct'
 
 require "cloud/kitchens/dispatch/identity"
-require "cloud/kitchens/dispatch/cli"
 
 module Cloud
   module Kitchens

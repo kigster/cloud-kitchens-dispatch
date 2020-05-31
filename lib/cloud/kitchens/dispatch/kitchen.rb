@@ -9,7 +9,6 @@ require_relative 'order'
 module Cloud
   module Kitchens
     module Dispatch
-      # Gem identity information.
       class Kitchen
         attr_accessor :orders, :order_prepared_observers
 

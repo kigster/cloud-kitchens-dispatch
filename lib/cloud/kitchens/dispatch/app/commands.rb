@@ -5,7 +5,7 @@ require 'dry/cli'
 module Cloud
   module Kitchens
     module Dispatch
-      module CLI
+      module App
         module Commands
           extend Dry::CLI::Registry
 

@@ -1,11 +1,21 @@
 # frozen_string_literal: true
 
 require "cloud/kitchens/dispatch/identity"
-require "cloud/kitchens/dispatch/cli"
+require "cloud/kitchens/dispatch/app/config"
+require "cloud/kitchens/dispatch/app/commands"
 
 module Cloud
   module Kitchens
     module Dispatch
+      class << self
+        def configure
+          yield(config)
+        end
+
+        def config
+          App::Config.config
+        end
+      end
     end
   end
 end

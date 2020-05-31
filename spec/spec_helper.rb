@@ -2,7 +2,6 @@
 
 require 'rspec'
 require 'rspec/its'
-
 require 'simplecov'
 
 if ENV['CI']
@@ -12,17 +11,25 @@ end
 
 SimpleCov.start { enable_coverage :branch }
 
-require "cloud/kitchens/dispatch"
+require 'cloud/kitchens/dispatch'
+require 'dry/configurable/test_interface'
+
+module Cloud
+  module Kitchens
+    module Dispatch
+      module App
+        class Config
+          enable_test_interface
+        end
+      end
+    end
+  end
+end
+
 
 RSpec.configure do |config|
-  config.color = true
-  config.disable_monkey_patching!
-  config.example_status_persistence_file_path = "./tmp/rspec-examples.txt"
+  config.example_status_persistence_file_path = './tmp/rspec-examples.txt'
   config.filter_run_when_matching :focus
-  config.formatter = :progress
-  config.order = :random
-  config.shared_context_metadata_behavior = :apply_to_host_groups
-  config.warnings = true
 
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
@@ -33,4 +40,9 @@ RSpec.configure do |config|
     mocks.verify_doubled_constant_names = true
     mocks.verify_partial_doubles = true
   end
+
+  config.before reset_config: true do
+    Cloud::Kitchens::Dispatch::App::Config.reset_config
+  end
 end
+

@@ -21,10 +21,13 @@ Gem::Specification.new do |spec|
   spec.signing_key = Gem.default_key_path
   spec.cert_chain = [Gem.default_cert_path]
 
+  spec.add_dependency 'aasm'
   spec.add_dependency 'dry-cli'
+  spec.add_dependency 'dry-configurable'
   spec.add_dependency 'dry-initializer'
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'dry-types'
+  spec.add_dependency 'ventable'
 
   spec.add_development_dependency 'asciidoctor'
   spec.add_development_dependency 'codecov'

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "cloud/kitchens/dispatch"
-require "cloud/kitchens/dispatch/cli"
+require "cloud/kitchens/dispatch/commands"
 require "cloud/kitchens/dispatch/identity"
 
 Dry::CLI.new(Cloud::Kitchens::Dispatch::CLI::Commands).call

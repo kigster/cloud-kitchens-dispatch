@@ -25,7 +25,7 @@ module Cloud
         end
 
         def deliver!
-          @order['state'] = OrderState['delivered']
+          @order['statex'] = OrderState['delivered']
           order_delivered_observers.each do |observer|
             observer.on_order_delivered(order) if observer.respond_to?(:on_order_delivered)
           end
