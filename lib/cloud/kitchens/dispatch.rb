@@ -1,11 +1,29 @@
 # frozen_string_literal: true
 
+require 'pastel'
+require_relative 'dispatch/logging'
+require_relative 'dispatch/identity'
+require 'pp'
+
 module Cloud
   module Kitchens
     module Dispatch
+      PASTEL = ::Pastel.new.freeze
+      COLOR = ::Pastel::Color.new(enabled: true).freeze
+
       class << self
+        attr_accessor :launcher
+
+        def colorize(string, *colors)
+          COLOR.decorate(string, *colors)
+        end
+
         def configure
           yield(app_config)
+        end
+
+        def program_header
+          PASTEL.white.bold.on_blue("  #{Identity::NAME}  ") + PASTEL.black.on_bright_green("  (v#{Identity::VERSION})   ")
         end
 
         def app_config
@@ -13,14 +31,14 @@ module Cloud
         end
 
         def log_event(event)
-          logger.event "order event ❯ #{event.order}", event: event_name(event), produced_by: event.producer
+          logger.event("order event ❯ #{event.order}", event: event_name(event), from: event.producer)
         end
 
         def logger(memoized = true)
           return @logger if @logger && memoized
 
-          @logger = TTY::Logger.new do |config|
-            config.metadata = [:pid, :time]
+          @logger = TTY::Logger.new(fields: { thread: Thread.current.name } ) do |config|
+            config.metadata = [:time]
             config.level    = app_config.logging&.loglevel&.to_sym || :debug
             config.types    = Logging::LOGGING_TYPES
             config.handlers = []

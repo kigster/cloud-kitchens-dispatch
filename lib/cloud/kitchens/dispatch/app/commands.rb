@@ -3,6 +3,7 @@
 require 'json'
 require 'dry/cli'
 require 'pastel'
+require 'cloud/kitchens/dispatch'
 require 'cloud/kitchens/dispatch/identity'
 require 'cloud/kitchens/dispatch/logging'
 require 'active_support/core_ext/hash/keys'
@@ -12,11 +13,9 @@ require_relative '../order_struct.rb'
 module Cloud
   module Kitchens
     module Dispatch
-      PASTEL = Pastel.new.freeze
-
       module App
         module Commands
-          extend Dry::CLI::Registry
+          extend ::Dry::CLI::Registry
 
           class << self
             include ::Cloud::Kitchens::Dispatch::Logging
@@ -39,6 +38,7 @@ module Cloud
               %i[loglevel logfile quiet trace].each do |setting|
                 logging_options_to_config setting, **opts
               end
+              @logger = ::Cloud::Kitchens::Dispatch.logger(true)
             end
 
             protected
@@ -48,8 +48,12 @@ module Cloud
               config.logging.send("#{option}=", value) if value
             end
 
+            def colorize(msg, *colors)
+              ::Cloud::Kitchens::Dispatch.colorize(msg, *colors)
+            end
+
             def logger
-              ::Cloud::Kitchens::Dispatch.logger
+              @logger ||= ::Cloud::Kitchens::Dispatch.logger
             end
 
             def config
@@ -61,7 +65,7 @@ module Cloud
             desc PASTEL.yellow('Print version')
 
             def call(*)
-              puts PASTEL.white.bold.on_blue("  #{Identity::NAME}  ") + PASTEL.black.on_bright_green("  (v#{Identity::VERSION})   ")
+              puts
             end
           end
 
@@ -79,10 +83,18 @@ module Cloud
             def call(orders:, **opts)
               super(**opts)
               JSON.parse(File.read(orders)).each do |order|
-                order.symbolize_keys!
-                pp order
-                Events::OrderReceivedEvent.new(OrderStruct.new(**order), self).fire!
+                order_struct = parse_order(order)
+
+                Events::OrderReceivedEvent.new(order_struct, self).fire!
               end
+            end
+
+            private
+
+            def parse_order(order)
+              OrderStruct.new(**order.symbolize_keys)
+            rescue Dry::Types::SchemaError, Dry::Struct::Error => e
+              logger.invalid(colorize("Can't parse order #{order}: #{e.message}", :bold, :red))
             end
           end
 

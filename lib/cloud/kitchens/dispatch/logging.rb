@@ -1,33 +1,41 @@
 # frozen_string_literal: true
 
 require 'tty-logger'
+require 'cloud/kitchens/dispatch'
 
 module Cloud
   module Kitchens
     module Dispatch
       module Logging
-        module InstanceMethods
-          def logger
-            ::Cloud::Kitchens::Dispatch.logger
-          end
-
-          class << self
-            def included(base)
-              base.instance_eval do
-                LOGGING_METHODS.each do |log_method|
-                  define_method log_method do |*args|
-                    logger.send(log_method, *args)
-                  end
-                end
-              end
-            end
+        class << self
+          def included(base)
+            base.include(LoggingMethods)
           end
         end
 
-        class << self
-          def included(base)
-            base.include(InstanceMethods)
-            base.extend(InstanceMethods)
+        module LoggingMethods
+          class << self
+            def included(base)
+              LOGGING_METHODS.each do |log_method|
+                base.define_method log_method do |msg, *args|
+                  logger.send(log_method, ::Cloud::Kitchens::Dispatch.colorize(msg, :yellow), *args)
+                end
+              end
+
+              base.instance_eval do
+                def logger
+                  ::Cloud::Kitchens::Dispatch.logger
+                end
+              end
+
+              return unless base.is_a?(Class)
+
+              base.class_eval do
+                def logger
+                  ::Cloud::Kitchens::Dispatch.logger
+                end
+              end
+            end
           end
         end
 
@@ -37,6 +45,7 @@ module Cloud
           delivering: { level: :info },
           expired: { level: :warning },
           event: { level: :info },
+          invalid: { level: :error },
         }.freeze
 
         DEFAULT_LOGGING_METHODS = %i[
@@ -81,6 +90,12 @@ module Cloud
               expired: {
                 symbol: ' ⛔️ ',
                 label: 'expired',
+                color: :red,
+                levelpad: 5
+              },
+              invalid: {
+                symbol: ' 🧨 ',
+                label: ::Cloud::Kitchens::Dispatch.colorize('INVALID', :white, :on_red),
                 color: :red,
                 levelpad: 5
               },

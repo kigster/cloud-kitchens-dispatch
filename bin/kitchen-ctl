@@ -1,24 +1,15 @@
-#! /usr/bin/env ruby
+#!/usr/bin/env ruby -W0
 # frozen_string_literal: true
 
 lib_path = File.dirname(__FILE__) + '/../lib'
 $LOAD_PATH << lib_path if Dir.exist?(lib_path)
 
+# vim: ft=ruby
+
+require 'bundler/setup'
+require 'dry/cli'
+
 require "cloud/kitchens/dispatch"
-require "cloud/kitchens/dispatch/identity"
-require "cloud/kitchens/dispatch/app/commands"
-require "cloud/kitchens/dispatch/logging"
-require "cloud/kitchens/dispatch/events/abstract_order_event"
-require "cloud/kitchens/dispatch/events/order_ready_event"
-require 'ventable'
+require "cloud/kitchens/dispatch/app/launcher"
 
-class App
-  include ::Cloud::Kitchens::Dispatch::Logging
-
-  def run
-    # noinspection RubyYardParamTypeMatch
-    ::Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands).call
-  end
-end
-
-App.new.run
+::Cloud::Kitchens::Dispatch::App::Launcher.new(ARGV.dup).execute!

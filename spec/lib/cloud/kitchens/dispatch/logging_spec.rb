@@ -7,6 +7,9 @@ require "cloud/kitchens/dispatch/logging"
 module App
   class Logrande
     include ::Cloud::Kitchens::Dispatch::Logging
+    class << self
+      include ::Cloud::Kitchens::Dispatch::Logging
+    end
   end
 end
 
