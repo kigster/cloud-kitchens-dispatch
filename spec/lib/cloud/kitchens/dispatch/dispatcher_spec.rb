@@ -6,11 +6,9 @@ require 'dry/configurable/test_interface'
 
 require "cloud/kitchens/dispatch/app/config"
 
-
 module Cloud
   module Kitchens
     module Dispatch
-
       RSpec.describe Dispatcher do
         subject(:dispatcher) { described_class.new }
         before(:each) { App::Config.reset_config }

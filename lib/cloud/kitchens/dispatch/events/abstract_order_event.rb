@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ventable'
 
 module Cloud
@@ -12,13 +14,10 @@ module Cloud
           }
         end
 
-        def event_logger
-
-        end
+        def event_logger; end
       end
 
       class AbstractOrderEvent
-
         attr_reader :order
 
         def initialize(order)
@@ -26,13 +25,12 @@ module Cloud
         end
 
         class << self
-
           def inherited(base)
             base.instance_eval do
               include Ventable::Event
               group :transaction, ::Cloud::Kitchens::Events.transaction
 
-              notifies ->(event) { self.metrics.handle_event(event) }
+              notifies ->(event) { metrics.handle_event(event) }
             end
           end
         end

@@ -26,7 +26,6 @@ module Cloud
   end
 end
 
-
 RSpec.configure do |config|
   config.example_status_persistence_file_path = './tmp/rspec-examples.txt'
   config.filter_run_when_matching :focus
@@ -45,4 +44,3 @@ RSpec.configure do |config|
     Cloud::Kitchens::Dispatch::App::Config.reset_config
   end
 end
-
