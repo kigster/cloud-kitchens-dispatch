@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'pastel'
-require_relative 'dispatch/logging'
-require_relative 'dispatch/identity'
+require 'cloud/kitchens/dispatch/logging'
+require 'cloud/kitchens/dispatch/identity'
 require 'pp'
 
 module Cloud
@@ -11,8 +11,11 @@ module Cloud
       PASTEL = ::Pastel.new.freeze
       COLOR = ::Pastel::Color.new(enabled: true).freeze
 
+      GEM_ROOT = File.expand_path('../', __dir__).freeze
+      BINARY = "#{GEM_ROOT}/bin/kitchen-ctl"
+
       class << self
-        attr_accessor :launcher
+        attr_accessor :launcher, :in_test
 
         def colorize(string, *colors)
           COLOR.decorate(string, *colors)
@@ -73,4 +76,5 @@ require_relative 'dispatch/courier'
 
 require_relative 'dispatch/events'
 
+require_relative 'dispatch/app/launcher'
 require_relative 'dispatch/app/commands'

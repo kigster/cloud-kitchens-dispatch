@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'tty-tree'
   spec.add_dependency 'ventable'
 
+  spec.add_development_dependency 'aruba', '= 1.0.0'
   spec.add_development_dependency 'asciidoctor'
   spec.add_development_dependency 'codecov'
   spec.add_development_dependency 'rake'
