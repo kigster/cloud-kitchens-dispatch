@@ -1,104 +1,60 @@
 # frozen_string_literal: true
 
 require 'dry/cli'
+require 'pastel'
+require 'cloud/kitchens/dispatch/identity'
 
 module Cloud
   module Kitchens
     module Dispatch
+      PASTEL = Pastel.new.freeze
+
       module App
         module Commands
           extend Dry::CLI::Registry
 
           class Version < Dry::CLI::Command
-            desc 'Print version'
+            desc PASTEL.yellow('Print version')
 
             def call(*)
-              puts '1.0.0'
+              puts PASTEL.white.bold.on_blue("  #{Identity::NAME}  ") + PASTEL.black.on_bright_green("  (v#{Identity::VERSION})   ")
             end
           end
 
-          class Echo < Dry::CLI::Command
-            desc 'Print input'
+          class Process < Dry::CLI::Command
+            desc PASTEL.yellow('Open the kitchen to process a given set of orders in a JSON file')
 
-            argument :input, desc: 'Input to print'
+            argument :file,
+                     type: :string,
+                     required: true,
+                     desc: 'Process a single orders.json file'
 
-            example ['             # Prints \'wuh?\'',
-                     'hello, folks # Prints \'hello, folks\'']
+            # noinspection RubyYardParamTypeMatch
+            example(['--file orders.json'].map { |e| PASTEL.bold.green(e) })
 
-            def call(input: nil, **)
-              if input.nil?
-                puts 'wuh?'
-              else
-                puts input
-              end
+            def call(file:, **)
+              puts "lets process file #{file}"
             end
           end
 
-          class Start < Dry::CLI::Command
-            desc 'Start Foo machinery'
+          class Watch < Dry::CLI::Command
+            desc PASTEL.yellow("Open the kitchen, watch a given directory for new JSON Orders")
+            argument :directory,
+                     type: :string,
+                     required: true,
+                     desc: 'Process all files in a directory, sorted by date created'
 
-            argument :root, required: true, desc: 'Root directory'
+            # noinspection RubyYardParamTypeMatch
+            example(['--directory /usr/local/var/incoming-orders'].map { |e| PASTEL.bold.green(e) })
 
-            example ['path/to/root # Start Foo at root directory']
-
-            def call(root:, **)
-              puts "started - root: #{root}"
+            def call(directory:, **)
+              puts "lets watch directory #{directory}"
             end
           end
 
-          class Stop < Dry::CLI::Command
-            desc 'Stop Foo machinery'
-
-            option :graceful, type: :boolean, default: true, desc: 'Graceful stop'
-
-            def call(**options)
-              puts "stopped - graceful: #{options.fetch(:graceful)}"
-            end
-          end
-
-          class Exec < Dry::CLI::Command
-            desc 'Execute a task'
-
-            argument :task, type: :string, required: true, desc: 'Task to be executed'
-            argument :dirs, type: :array, required: false, desc: 'Optional directories'
-
-            def call(task:, dirs: [], **)
-              puts "exec - task: #{task}, dirs: #{dirs.inspect}"
-            end
-          end
-
-          module Generate
-            class Configuration < Dry::CLI::Command
-              desc 'Generate configuration'
-
-              option :apps, type: :array, default: [], desc: 'Generate configuration for specific apps'
-
-              def call(apps:, **)
-                puts "generated configuration for apps: #{apps.inspect}"
-              end
-            end
-
-            class Test < Dry::CLI::Command
-              desc 'Generate tests'
-
-              option :framework, default: 'minitest', values: %w[minitest rspec]
-
-              def call(framework:, **)
-                puts "generated tests - framework: #{framework}"
-              end
-            end
-          end
-
-          register 'version', Version, aliases: %w[v -v --version]
-          register 'echo', Echo
-          register 'start', Start
-          register 'stop', Stop
-          register 'exec', Exec
-
-          register 'generate', aliases: ['g'] do |prefix|
-            prefix.register 'config', Generate::Configuration
-            prefix.register 'test', Generate::Test
-          end
+          register 'version', Version, aliases: %w[v --version -v]
+          register 'process', Process, aliases: %w[p --ingest -p]
+          register 'watch',   Watch,   aliases: %w[w --watch-directory -w]
         end
       end
     end

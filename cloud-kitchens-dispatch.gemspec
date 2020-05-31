@@ -8,14 +8,14 @@ Gem::Specification.new do |spec|
   spec.platform = Gem::Platform::RUBY
   spec.authors = ['Konstantin Gredeskoul']
   spec.email = ['kigster@gmail.com']
-  spec.homepage = 'https://github.com/kigster/cloud-kitchens-dispatch'
+  spec.homepage = 'https://github.com/kigster/kitchen-ctl'
   spec.summary = 'Order fulfillment simulation'
   spec.license = 'MIT'
 
   spec.metadata = {
-    'source_code_uri' => 'https://github.com/kigster/cloud-kitchens-dispatch',
-    'changelog_uri' => 'https://github.com/kigster/cloud-kitchens-dispatch/blob/master/CHANGES.md',
-    'bug_tracker_uri' => 'https://github.com/kigster/cloud-kitchens-dispatch/issues'
+    'source_code_uri' => 'https://github.com/kigster/kitchen-ctl',
+    'changelog_uri' => 'https://github.com/kigster/kitchen-ctl/blob/master/CHANGES.md',
+    'bug_tracker_uri' => 'https://github.com/kigster/kitchen-ctl/issues'
   }
 
   spec.signing_key = Gem.default_key_path
@@ -47,7 +47,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['lib/**/*']
   spec.extra_rdoc_files = Dir['README*', 'LICENSE*']
-  spec.executables << 'cloud-kitchens-dispatch'
+  spec.executables << 'kitchen-ctl'
 
   spec.require_paths = ['lib']
 end

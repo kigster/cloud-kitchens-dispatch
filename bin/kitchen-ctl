@@ -1,0 +1,11 @@
+#! /usr/bin/env ruby
+# frozen_string_literal: true
+
+lib_path = File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH << lib_path if Dir.exist?(lib_path)
+
+require "cloud/kitchens/dispatch"
+require "cloud/kitchens/dispatch/identity"
+require "cloud/kitchens/dispatch/app/commands"
+
+Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands).call
