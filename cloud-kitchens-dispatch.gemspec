@@ -27,6 +27,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-initializer'
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'dry-types'
+  spec.add_dependency 'pastel'
+  spec.add_dependency 'tty-box'
+  spec.add_dependency 'tty-font'
+  spec.add_dependency 'tty-screen'
+  spec.add_dependency 'tty-table'
+  spec.add_dependency 'tty-tree'
   spec.add_dependency 'ventable'
 
   spec.add_development_dependency 'asciidoctor'
