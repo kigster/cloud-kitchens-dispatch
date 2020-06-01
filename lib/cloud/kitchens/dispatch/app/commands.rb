@@ -5,8 +5,8 @@ require 'json'
 require 'dry/cli'
 require 'pastel'
 require 'cloud/kitchens/dispatch'
-require 'cloud/kitchens/dispatch/identity'
 require 'cloud/kitchens/dispatch/logging'
+require 'cloud/kitchens/dispatch/identity'
 require 'active_support/core_ext/hash/keys'
 
 require_relative '../order_struct.rb'
@@ -71,7 +71,7 @@ module Cloud
           end
 
           class Version < BaseCommand
-            desc PASTEL.yellow('Print version')
+            desc Dispatch::PASTEL.yellow('Print version')
 
             def call(*); end
           end
@@ -83,6 +83,11 @@ module Cloud
                      type: :string,
                      required: true,
                      desc: 'File path to the orders.json file'
+
+            option  :rate_per_second,
+                    type: :float,
+                    default: 2,
+                    desc: 'Order ingestion rate per second'
 
             # noinspection RubyYardParamTypeMatch
             example(['--orders data.json'].map { |e| PASTEL.bold.green(e) })

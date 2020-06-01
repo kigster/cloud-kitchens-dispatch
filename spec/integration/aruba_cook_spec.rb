@@ -31,7 +31,7 @@ module Cloud
 
             context 'printed to standard output' do
               subject { stdout }
-              it { should match /Dispatcher starting/ }
+              it { should match /Orders have been imported from/ }
             end
           end
         end

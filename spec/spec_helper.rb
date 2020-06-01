@@ -67,6 +67,4 @@ Aruba.configure do |config|
   config.main_class       = ::Cloud::Kitchens::Dispatch::App::Launcher
 end
 
-
 ::Dir.glob(::File.expand_path('../support/**/*.rb', __FILE__)).each { |f| require(f) }
-

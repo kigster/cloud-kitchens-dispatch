@@ -11,8 +11,9 @@ require 'cloud/kitchens/dispatch/ui'
 
 module Cloud
   module Kitchens
+    # noinspection ALL
     module Dispatch
-      Counter = Struct.new(:received, :cooked, :picked_up, :delivered) do
+      Counter ||= Struct.new(:received, :cooked, :ready, :picked_up, :delivered) do
         attr_reader :mutex
 
         def initialize(*args)
@@ -67,8 +68,6 @@ module Cloud
           Events::OrderReadyEvent.notifies(self)
           Events::OrderPickedUpEvent.notifies(self)
           Events::OrderDeliveredEvent.notifies(self)
-
-          box("Dispatcher starting", "Orders are sourced from: #{order_source}", stream: ::Cloud::Kitchens::Dispatch.stdout)
         end
 
         def start!
@@ -79,13 +78,43 @@ module Cloud
           queue(:received) << event.order
         end
 
+        def on_order_cooked(event)
+          process_order_changes(event.order, cooking: :ready)
+        end
+
+        def on_order_ready(event)
+          process_order_changes(event.order, ready: :picked_up)
+        end
+
+        def on_order_picked_up(event)
+          process_order_changes(event.order, picked_up: :delivered)
+        end
+
+        def on_order_delivered(event)
+          process_order_changes(event.order, :delivered, :archived)
+        end
+
         private
+
+        def process_order_changes(order, **opts)
+          from = opts.keys.first
+          to = opts.values.first
+
+          o = if from
+                queue(from)&.pop(order)
+              else
+                order
+              end
+
+          queue(to).push(o)
+        end
 
         def import_orders_from_file
           JSON.parse(File.read(order_source)).each do |order_hash|
             order = parse_order(order_hash)
             publish :order_received, order: order
           end
+          box('DISPATCHER', "Orders have been imported from: #{order_source}", stream: ::Cloud::Kitchens::Dispatch.stdout)
         end
 
         def queue(state)
