@@ -58,7 +58,7 @@ module Cloud
                 logging_options_to_config setting, **opts
               end
 
-              ::Cloud::Kitchens::Dispatch.logger(true)
+              ::Cloud::Kitchens::Dispatch.reconfigure_logger!
             end
 
             protected
@@ -91,10 +91,7 @@ module Cloud
               super(**opts)
               return if orders.nil?
 
-              JSON.parse(File.read(orders)).each do |order|
-                order_struct = parse_order(order)
-                publish :order_received, order: order_struct
-              end
+              Dispatcher.dispatcher(order_source: orders)
             rescue Errors::EventPublishingError => e
               stderr.puts
               stderr.puts error_box(e, stream: stderr)
@@ -103,12 +100,6 @@ module Cloud
             end
 
             private
-
-            def parse_order(order)
-              OrderStruct.new(**order.symbolize_keys)
-            rescue Dry::Types::SchemaError, Dry::Struct::Error => e
-              logger.invalid(colorize("Can't parse file — #{order}: #{e.message}", :bold, :red))
-            end
 
             def stderr
               ::Cloud::Kitchens::Dispatch.launcher.stderr

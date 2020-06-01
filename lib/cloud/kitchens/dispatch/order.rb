@@ -10,6 +10,18 @@ module Cloud
     module Dispatch
       # Gem identity information.
       class Order
+        class << self
+          def stateful_queues
+            if @stateful_queues.nil?
+              @stateful_queues = {}
+              Order::STATES.each do |state|
+                @stateful_queues[state] = Queue.new
+              end
+            end
+            @stateful_queues
+          end
+        end
+
         extend Forwardable
 
         STATES = [:received,
@@ -61,6 +73,18 @@ module Cloud
         # @return [Float] EPOCH time as a floating point number
         def now
           Time.now.to_f
+        end
+
+        def to_s
+          "\n<Order:#{object_id} "\
+            "\n\tid    ->  #{id.green} " \
+            "\n\tname  ->  #{(sprintf '%-20.20s', name).yellow} " \
+            "\n\ttemp  ->  #{(sprintf '%-5s', temperature).yellow} " \
+            "\n\tdecay ->  #{(sprintf '%05.2f', decay_rate).yellow} " \
+            "\n\tshelf ->  #{(sprintf '%03d', shelf_life).yellow} " \
+            "\n\tvalue ->  #{(sprintf '%04.2f', order_value).yellow} " \
+            "\n\tstate ->  #{(sprintf '%-10s', aasm.current_state).red}" \
+            "\n>"
         end
 
         aasm do

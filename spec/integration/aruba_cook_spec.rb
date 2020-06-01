@@ -14,15 +14,24 @@ module Cloud
             let(:args) { %w(help) }
 
             context 'printed to standard output' do
-              subject { stdout }
+              subject { stderr }
 
-              it { should match /#{::Cloud::Kitchens::Dispatch::Identity::VERSION}/ }
+              it { should match /Commands:/ }
             end
 
             context 'printed to standard error' do
               subject { stderr }
 
               it { should match /cook ORDERS/ }
+            end
+          end
+
+          context 'cook' do
+            let(:args) { ['cook', Fixtures.file] }
+
+            context 'printed to standard output' do
+              subject { stdout }
+              it { should match /Dispatcher starting/ }
             end
           end
         end

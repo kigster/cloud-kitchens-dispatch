@@ -120,7 +120,7 @@ module Cloud
           end
 
           def box(title, *text, stream: $stdout)
-            box_opts = box_args(bg: :black, fg: :bright_blue, title: title)
+            box_opts = box_args(bg: :magenta, fg: :white, title: title)
 
             stream.puts TTY::Box.frame(
               *text,

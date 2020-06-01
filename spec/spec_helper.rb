@@ -14,7 +14,6 @@ end
 SimpleCov.start
 
 require 'cloud/kitchens/dispatch'
-require 'cloud/kitchens/dispatch/app/launcher'
 require 'dry/configurable/test_interface'
 
 module Cloud
@@ -26,8 +25,12 @@ module Cloud
         end
       end
     end
+
+    Dispatch.in_test = true
   end
 end
+
+require 'cloud/kitchens/dispatch/app/launcher'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = './tmp/rspec-examples.txt'
@@ -49,7 +52,7 @@ RSpec.configure do |config|
 
   config.include Aruba::Api
 
-  config.before(:suite) do
+  config.before(:each) do
     ::Cloud::Kitchens::Dispatch.in_test = true
   end
 

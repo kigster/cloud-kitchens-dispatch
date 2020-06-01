@@ -7,7 +7,7 @@ module Cloud
   module Kitchens
     module Dispatch
       module Events
-        class OrderPreparedEvent < AbstractOrderEvent
+        class OrderDeliveredEvent < AbstractOrderEvent
         end
       end
     end
