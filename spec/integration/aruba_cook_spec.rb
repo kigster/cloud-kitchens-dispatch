@@ -7,7 +7,7 @@ module Cloud
   module Kitchens
     module Dispatch
       module App
-        RSpec.describe Commands, type: :aruba do
+        RSpec.describe Commands, type: :arubac do
           include_context 'aruba setup'
 
           context 'help' do

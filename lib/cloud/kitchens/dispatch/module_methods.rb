@@ -23,6 +23,8 @@ module Cloud
         def logger
           return @logger if @logger
 
+          raise ArgumentError, "Please configure #stdout and #stderr on Dispatch module" if ::Cloud::Kitchens::Dispatch.stderr.nil?
+
           @logger = TTY::Logger.new(
             output: ::Cloud::Kitchens::Dispatch.stderr,
             fields: { thread: Thread.current.name }

@@ -9,6 +9,8 @@ module Cloud
         attr_accessor :launcher, :in_test, :stdout, :stderr
       end
 
+      self.stderr = StringIO.new
+      self.stdout = StringIO.new
       self.in_test = false
     end
   end
