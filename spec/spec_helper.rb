@@ -49,11 +49,11 @@ RSpec.configure do |config|
 
   config.include Aruba::Api
 
-  config.before(:each) do
+  config.before(:suite) do
     ::Cloud::Kitchens::Dispatch.in_test = true
   end
 
-  config.after(:each) do
+  config.before(:each) do
     ::Cloud::Kitchens::Dispatch.launcher = nil
   end
 end

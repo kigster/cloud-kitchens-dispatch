@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'forwardable'
 require 'json'
 require 'dry/cli'
 require 'pastel'
@@ -9,6 +10,8 @@ require 'cloud/kitchens/dispatch/logging'
 require 'active_support/core_ext/hash/keys'
 
 require_relative '../order_struct.rb'
+require_relative '../events'
+require_relative '../ui'
 
 module Cloud
   module Kitchens
@@ -22,10 +25,16 @@ module Cloud
           end
 
           class AbstractOrderCommand < Dry::CLI::Command
+            include EventPublisher
+            include UI
+
             class << self
               def inherited(base)
                 super(base)
+                base.extend(Forwardable)
                 base.instance_eval do
+                  def_delegators ::Cloud::Kitchens::Dispatch, :colorize, :app_config, :logger
+
                   option :loglevel, values: Logging::DEFAULT_LOGGING_METHODS.map(&:to_s), desc: 'Logging level'
                   option :logfile, default: nil, desc: 'Log also into the specified file'
                   option :quiet, default: nil, desc: 'Stops logging to the console'
@@ -38,26 +47,15 @@ module Cloud
               %i[loglevel logfile quiet trace].each do |setting|
                 logging_options_to_config setting, **opts
               end
-              @logger = ::Cloud::Kitchens::Dispatch.logger(true)
+
+              ::Cloud::Kitchens::Dispatch.logger(true)
             end
 
             protected
 
             def logging_options_to_config(option, **opts)
               value = opts[option] unless opts&.empty?
-              config.logging.send("#{option}=", value) if value
-            end
-
-            def colorize(msg, *colors)
-              ::Cloud::Kitchens::Dispatch.colorize(msg, *colors)
-            end
-
-            def logger
-              @logger ||= ::Cloud::Kitchens::Dispatch.logger
-            end
-
-            def config
-              App::Config.config
+              app_config.logging.send("#{option}=", value) if value
             end
           end
 
@@ -84,9 +82,10 @@ module Cloud
               super(**opts)
               JSON.parse(File.read(orders)).each do |order|
                 order_struct = parse_order(order)
-
-                Events::OrderReceivedEvent.new(order_struct, self).fire!
+                publish :order_received, order: order_struct
               end
+            rescue Errno::ENOENT => e
+              error("Can't open file #{orders.bold.green}", e.message.red.italic)
             end
 
             private
@@ -94,7 +93,7 @@ module Cloud
             def parse_order(order)
               OrderStruct.new(**order.symbolize_keys)
             rescue Dry::Types::SchemaError, Dry::Struct::Error => e
-              logger.invalid(colorize("Can't parse order #{order}: #{e.message}", :bold, :red))
+              logger.invalid(colorize("Can't parse file — #{order.green}: #{e.message}", :bold, :red))
             end
           end
 

@@ -25,10 +25,6 @@ module Cloud
           yield(app_config)
         end
 
-        def program_header
-          PASTEL.white.bold.on_blue("  #{Identity::NAME}  ") + PASTEL.black.on_bright_green("  (v#{Identity::VERSION})   ")
-        end
-
         def app_config
           App::Config.config
         end

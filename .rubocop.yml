@@ -31,4 +31,6 @@ Style/HashTransformValues:
 Style/SlicingWithRange:
   Enabled: true
 
+Naming/MethodParameterName:
+  Enabled: false
 

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pastel'
+
 module Cloud
   module Kitchens
     module Dispatch
@@ -9,6 +11,10 @@ module Cloud
         LABEL         = "Cloud Kitchens Dispatch"
         VERSION       = "0.1.1"
         VERSION_LABEL = "#{LABEL} #{VERSION}"
+        COPYRIGHT     = '© 2020 Konstantin Gredeskoul, All rights reserved. '
+        LICENSE       = 'MIT License'
+        META          = [name: NAME, version: VERSION, copyright: COPYRIGHT, license: LICENSE, label: LABEL].freeze
+        HEADER        = ["#{NAME} (v#{VERSION})", COPYRIGHT + LICENSE].freeze
       end
     end
   end
