@@ -107,7 +107,7 @@ module Cloud
             def parse_order(order)
               OrderStruct.new(**order.symbolize_keys)
             rescue Dry::Types::SchemaError, Dry::Struct::Error => e
-              logger.invalid(colorize("Can't parse file — #{order.green}: #{e.message}", :bold, :red))
+              logger.invalid(colorize("Can't parse file — #{order}: #{e.message}", :bold, :red))
             end
 
             def stderr

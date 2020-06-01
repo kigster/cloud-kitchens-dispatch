@@ -15,17 +15,15 @@ module Cloud
         attribute :id, Types::String
         attribute :name, Types::String
         attribute :temp, Types::Temperature
-        # attribute :state, Types::String # OrderState
+        attribute :state, Types::OrderState
         attribute :shelfLife, Types::Integer
         attribute :decayRate, Types::Float
-        attribute :received_at, Types::DateTime.default(DateTime.now.freeze)
-        # attribute :ready_at, Types::DateTime.optional
-        # attribute :picked_up_at, Types::DateTime.optional
-        # attribute :delivered_at, Types::DateTime.optional
-        #
+
         def to_s
-          "\n" + to_hash.awesome_inspect + "\n"
+          "\n" + awesome_inspect + "\n"
         end
+
+        alias inspect to_s
       end
     end
   end

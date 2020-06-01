@@ -19,10 +19,15 @@ module Cloud
         end
 
         class AbstractOrderEvent
-          attr_reader :order, :producer
+          attr_reader :order, :index, :producer
 
-          def initialize(producer, order:)
+          def self.ventable_callback_method_name
+            ('on_' + name.gsub(/.*::/, '').gsub(/Event$/, '').underscore).to_sym
+          end
+
+          def initialize(producer, order:, index: nil)
             @order    = order
+            @index    = index
             @producer = (producer.is_a?(Class) ? producer.name : producer.class.name).gsub(/.*::/, '').underscore
           end
 

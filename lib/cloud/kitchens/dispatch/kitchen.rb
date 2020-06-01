@@ -15,6 +15,9 @@ module Cloud
         def initialize
           @order_prepared_observers = []
           @orders = Set.new
+          Cloud::Kitchens::Dispatch::Events::OrderReceivedEvent.configure do
+            notifies Cloud::Kitchens::Dispatch::Dispatcher
+          end
         end
 
         def add_order_prepared_observer(observer)
