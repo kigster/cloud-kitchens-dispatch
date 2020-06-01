@@ -9,8 +9,8 @@ module Cloud
     module Dispatch
       class EventReceiver
         @orders_received = Set.new
-        @mutex = Mutex.new
-        @total_orders = 0
+        @mutex           = Mutex.new
+        @total_orders    = 0
 
         class << self
           attr_accessor :orders_received, :mutex, :total_orders
@@ -64,6 +64,16 @@ module Cloud
               end
             end
           end
+        end
+
+        context '#order value' do
+          subject(:order) { Fixtures[1] }
+
+          it { is_expected.to be_a_kind_of(Order) }
+
+          its(:age) { is_expected.to be_within(0.1).of(0) }
+
+          its(:order_value) { is_expected.to be > 0 }
         end
       end
     end

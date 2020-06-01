@@ -15,6 +15,16 @@ module Cloud
             @order_hashes ||= JSON.parse(File.read(file))
           end
 
+          def orders_total
+            order_hashes.size
+          end
+
+          def [](index)
+            raise ArgumentError, "Invalid index #{index}" if index >= orders_total
+
+            Order.new(OrderStruct.new(order_hashes[index]))
+          end
+
           def each_order_hash
             order_hashes.each_with_index do |order, index|
               yield(order, index) if block_given?
