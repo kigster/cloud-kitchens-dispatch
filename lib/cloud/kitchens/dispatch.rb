@@ -15,8 +15,9 @@ module Cloud
 end
 
 require 'cloud/kitchens/dispatch/logging'
+require 'cloud/kitchens/dispatch/app/launcher'
 require 'cloud/kitchens/dispatch/identity'
-require 'pp'
+require 'cloud/kitchens/dispatch/module_methods'
 
 module Cloud
   module Kitchens
@@ -26,6 +27,8 @@ module Cloud
 
       GEM_ROOT = File.expand_path('../', __dir__).freeze
       BINARY   = "#{GEM_ROOT}/bin/kitchen-ctl"
+
+      extend ModuleMethods
     end
   end
 end
@@ -43,5 +46,4 @@ require_relative 'dispatch/courier'
 
 require_relative 'dispatch/events'
 
-require_relative 'dispatch/app/launcher'
 require_relative 'dispatch/app/commands'

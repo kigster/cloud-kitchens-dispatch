@@ -2,8 +2,6 @@
 
 require 'spec_helper'
 
-require "cloud/kitchens/dispatch/logging"
-
 module App
   class Logrande
     include ::Cloud::Kitchens::Dispatch::Logging

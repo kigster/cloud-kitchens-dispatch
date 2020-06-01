@@ -13,6 +13,7 @@ end
 
 SimpleCov.start
 
+require 'cloud/kitchens/dispatch/app/launcher'
 require 'cloud/kitchens/dispatch'
 require 'dry/configurable/test_interface'
 

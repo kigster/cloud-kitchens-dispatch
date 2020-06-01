@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'cloud/kitchens/dispatch/app/config'
+require 'cloud/kitchens/dispatch/app/launcher'
 
 module Cloud
   module Kitchens
