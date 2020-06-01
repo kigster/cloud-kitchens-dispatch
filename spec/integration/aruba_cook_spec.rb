@@ -10,16 +10,20 @@ module Cloud
         RSpec.describe Commands, type: :aruba do
           include_context 'aruba setup'
 
-          context '--help' do
-            let(:args) { %w(--help) }
+          context 'help' do
+            let(:args) { %w(help) }
 
-            subject { output }
+            context 'printed to standard output' do
+              subject { stdout }
 
-            it { should match /#{::Cloud::Kitchens::Dispatch::Identity::NAME}/ }
+              it { should match /#{::Cloud::Kitchens::Dispatch::Identity::VERSION}/ }
+            end
 
-            it { should match /#{::Cloud::Kitchens::Dispatch::Identity::VERSION}/ }
+            context 'printed to standard error' do
+              subject { stderr }
 
-            it { should match /MIT License/ }
+              it { should match /cook ORDERS/ }
+            end
           end
         end
       end

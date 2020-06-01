@@ -7,6 +7,8 @@ module Cloud
         class Error < StandardError; end
 
         class InvalidEventError < Error; end
+
+        class EventPublishingError < Error; end
       end
     end
   end

@@ -34,3 +34,6 @@ Style/SlicingWithRange:
 Naming/MethodParameterName:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+

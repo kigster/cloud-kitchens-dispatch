@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'ventable'
-require 'active_support/inflections'
+require 'active_support/inflector'
 require 'cloud/kitchens/dispatch/errors'
+require 'cloud/kitchens/dispatch/logging'
+
 module Cloud
   module Kitchens
     module Dispatch
@@ -10,14 +12,22 @@ module Cloud
       end
 
       module EventPublisher
+        class << self
+          def included(base)
+            base.include(Logging)
+          end
+        end
+
         def publish(event, **opts)
-          event_class_name = "#{event.camelize}Event"
+          event_class_name = "#{event.to_s.camelize}Event"
           unless Events.const_defined?(event_class_name)
             raise Errors::InvalidEventError, "event name #{event} does not map to an event class"
           end
 
           event_class = Events.const_get(event_class_name)
-          event_class.new(**opts).fire!
+          event_class.new(self, **opts).fire!
+        rescue Ventable::Error => e
+          raise Errors::EventPublishingError, e
         end
       end
     end

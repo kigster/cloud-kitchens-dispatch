@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/string'
+
 require 'forwardable'
+require 'stringio'
 require 'dry/cli'
+require 'dry/cli/parser'
 require 'tty/box'
 require 'tty/screen'
 
@@ -10,93 +14,70 @@ require 'cloud/kitchens/dispatch/ui'
 require 'cloud/kitchens/dispatch/identity'
 require 'cloud/kitchens/dispatch/app/commands'
 
-# rubocop: disable Style/GuardClause
+::Dry::CLI.class_eval do
+  def exit(*)
+    nil
+  end
+end
 module Cloud
   module Kitchens
     module Dispatch
       module App
+        class << self
+          def screen_width
+            @screen_width ||= [TTY::Screen.width, 150].min - 10
+          end
+        end
+
         class Launcher
-          attr_accessor :argv, :stdin, :stdout, :stderr, :kernel
+          attr_accessor :argv, :stdin, :stdout, :stderr, :kernel, :trace
 
           include UI
 
           def initialize(argv, stdin = STDIN, stdout = STDOUT, stderr = STDERR, kernel = nil)
-            clear_screen! unless test?
-
-            raise(ArgumentError, "Another instance of CLI Launcher was detected, aborting.") if ::Cloud::Kitchens::Dispatch.launcher
+            if ::Cloud::Kitchens::Dispatch.launcher
+              raise(ArgumentError, 'Another instance of CLI Launcher was detected, aborting.')
+            end
 
             ::Cloud::Kitchens::Dispatch.launcher = self
+
+            ::Cloud::Kitchens::Dispatch.in_test  = false
 
             self.argv   = argv
             self.stdin  = stdin
             self.stdout = stdout
             self.stderr = stderr
             self.kernel = kernel
+
+            self.trace = !ENV['TRACE'].nil?
           end
 
           def execute!
-            if argv.empty? || argv?(%w(--help -h))
-              print_header unless test?
-              puts cursor.down(2) unless test?
+            stdout.puts
+
+            if argv.empty? || argv?(%w(--help -h help version -v --version))
+              print_header(stream: stdout) unless test?
+              stdout.puts cursor.down(2) unless test?
               argv << '--help' if argv.empty?
             end
 
+            self.trace = true if argv?('-t')
+            argv << '--trace' if argv?('-t') && !argv?('--trace')
+
             # noinspection RubyYardParamTypeMatch
-            ::Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands).call(arguments: argv, out: stdout, err: stderr)
-            2.times { puts }
-            exit(0) unless test?
+            ::Dry::CLI.new(
+              ::Cloud::Kitchens::Dispatch::App::Commands
+            ).call(arguments: argv,
+                   out: stdout,
+                   err: stderr)
+            nil
           rescue StandardError => e
-            if test?
-              raise(e)
-            else
-              stderr.print error_box(e)
-              exit 1
-            end
+            process_error(e, stream: stderr); e
           ensure
-            unless test?
-              2.times { puts }
-            end
-          end
-
-          def print_header
-            box_opts = box_args(bg: :green, fg: :black)
-            stdout.puts TTY::Box.frame(
-              *Identity::HEADER,
-              **box_opts
-            )
-          end
-
-          def argv?(*flags)
-            flags = Array(flags)
-            !(flags & argv).empty?
-          end
-
-          def error_box(error)
-            TTY::Box.frame(**box_args(h: 5)) do
-              (error.is_a?(StandardError) ? error.message : error)
-            end
-          end
-
-          def box_args(bg: :red, fg: :black, w: TTY::Screen.width - 10)
-            { width: w,
-              padding: 1,
-              align: :left,
-              left: 5,
-              top: 2,
-              title: { top_left: Time.now.to_s, top_right: Identity::VERSION_LABEL },
-              style: {
-                bg: bg,
-                fg: fg,
-                border: { bg: bg, fg: :white },
-              }, }
-          end
-
-          def test?
-            ::Cloud::Kitchens::Dispatch.in_test
+            2.times { stdout.puts } unless test?
           end
         end
       end
     end
   end
 end
-# rubocop: enable Style/GuardClause

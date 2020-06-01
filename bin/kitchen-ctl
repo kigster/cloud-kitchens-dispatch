@@ -12,4 +12,7 @@ require 'dry/cli'
 require "cloud/kitchens/dispatch"
 require "cloud/kitchens/dispatch/app/launcher"
 
-::Cloud::Kitchens::Dispatch::App::Launcher.new(ARGV.dup).execute!
+code = ::Cloud::Kitchens::Dispatch::App::Launcher.new(ARGV.dup).execute!
+code ||= 0
+code = 1 unless code.is_a?(Integer)
+exit(code)

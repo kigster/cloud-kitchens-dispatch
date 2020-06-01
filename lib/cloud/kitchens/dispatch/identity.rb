@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pastel'
-
 module Cloud
   module Kitchens
     module Dispatch

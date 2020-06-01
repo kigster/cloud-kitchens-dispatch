@@ -21,7 +21,7 @@ module Cloud
         class AbstractOrderEvent
           attr_reader :order, :producer
 
-          def initialize(order, producer)
+          def initialize(producer, order:)
             @order    = order
             @producer = (producer.is_a?(Class) ? producer.name : producer.class.name).gsub(/.*::/, '').underscore
           end

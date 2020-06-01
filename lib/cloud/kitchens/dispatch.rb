@@ -14,6 +14,8 @@ module Cloud
       GEM_ROOT = File.expand_path('../', __dir__).freeze
       BINARY = "#{GEM_ROOT}/bin/kitchen-ctl"
 
+      @in_test = false
+
       class << self
         attr_accessor :launcher, :in_test
 

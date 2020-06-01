@@ -24,9 +24,20 @@ module Cloud
             include ::Cloud::Kitchens::Dispatch::Logging
           end
 
-          class AbstractOrderCommand < Dry::CLI::Command
+          class BaseCommand < Dry::CLI::Command
+            class << self
+              def inherited(base)
+                super(base)
+                base.include(UI)
+                base.instance_eval do
+                  option :trace, default: nil, desc: 'Print full stack trace, if an error occurs'
+                end
+              end
+            end
+          end
+
+          class AbstractOrderCommand < BaseCommand
             include EventPublisher
-            include UI
 
             class << self
               def inherited(base)
@@ -38,7 +49,6 @@ module Cloud
                   option :loglevel, values: Logging::DEFAULT_LOGGING_METHODS.map(&:to_s), desc: 'Logging level'
                   option :logfile, default: nil, desc: 'Log also into the specified file'
                   option :quiet, default: nil, desc: 'Stops logging to the console'
-                  option :trace, default: nil, desc: 'Print full stack trace, if an error occurs'
                 end
               end
             end
@@ -55,16 +65,15 @@ module Cloud
 
             def logging_options_to_config(option, **opts)
               value = opts[option] unless opts&.empty?
-              app_config.logging.send("#{option}=", value) if value
+
+              App::Config.config.logging.send("#{option}=", value) if value
             end
           end
 
-          class Version < Dry::CLI::Command
+          class Version < BaseCommand
             desc PASTEL.yellow('Print version')
 
-            def call(*)
-              puts
-            end
+            def call(*); end
           end
 
           class Cook < AbstractOrderCommand
@@ -78,14 +87,19 @@ module Cloud
             # noinspection RubyYardParamTypeMatch
             example(['--orders data.json'].map { |e| PASTEL.bold.green(e) })
 
-            def call(orders:, **opts)
+            def call(orders: nil, **opts)
               super(**opts)
+              return if orders.nil?
+
               JSON.parse(File.read(orders)).each do |order|
                 order_struct = parse_order(order)
                 publish :order_received, order: order_struct
               end
+            rescue Errors::EventPublishingError => e
+              stderr.puts
+              stderr.puts error_box(e, stream: stderr)
             rescue Errno::ENOENT => e
-              error("Can't open file #{orders.bold.green}", e.message.red.italic)
+              stderr.puts error_box("Can't open file: #{orders} — #{e.message}")
             end
 
             private
@@ -94,6 +108,10 @@ module Cloud
               OrderStruct.new(**order.symbolize_keys)
             rescue Dry::Types::SchemaError, Dry::Struct::Error => e
               logger.invalid(colorize("Can't parse file — #{order.green}: #{e.message}", :bold, :red))
+            end
+
+            def stderr
+              ::Cloud::Kitchens::Dispatch.launcher.stderr
             end
           end
 
