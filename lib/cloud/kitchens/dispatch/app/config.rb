@@ -16,7 +16,7 @@ module Cloud
 
           setting :logging, reader: true do
             setting :loglevel, default: :debug
-            setting :logfile, default: nil
+            setting :logfile, default: "log/kitchen-activity-log"
             setting :quiet, default: false
             setting :trace, default: false
           end

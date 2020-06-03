@@ -34,10 +34,11 @@ module Cloud
       # Gem identity information.
       class Dispatcher
         class << self
-          def dispatcher(order_source:)
+          # rubocop: disable Naming/MemoizedInstanceVariableName
+          def [](order_source:)
             @dispatcher ||= new(order_source: order_source)
-            @dispatcher.start!
           end
+          # rubocop: enable Naming/MemoizedInstanceVariableName
         end
 
         attr_reader :kitchen, :couriers, :shelves

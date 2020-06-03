@@ -23,7 +23,10 @@ module Cloud
         def logger
           return @logger if @logger
 
-          raise ArgumentError, "Please configure #stdout and #stderr on Dispatch module" if ::Cloud::Kitchens::Dispatch.stderr.nil?
+          if ::Cloud::Kitchens::Dispatch.stderr.nil?
+            raise ArgumentError,
+                  "Please configure #stdout and #stderr on Dispatch module"
+          end
 
           @logger = TTY::Logger.new(
             output: ::Cloud::Kitchens::Dispatch.stderr,
@@ -35,13 +38,16 @@ module Cloud
           end
         end
 
-        def reconfigure_logger!
+        def reconfigure_logger!(cfg)
           TTY::Logger.configure do |config|
             config.output   = ::Cloud::Kitchens::Dispatch.stderr
-            config.level    = app_config.logging&.loglevel&.to_sym || :debug
+            config.level    = cfg.logging&.loglevel&.to_sym || :debug
             config.handlers = []
-            config.handlers << Logging::CONSOLE_LOG_HANDLER[] unless app_config.logging.quiet
-            config.handlers << Logging::FILE_LOG_HANDLER[app_config.logging.logfile] if app_config.logging.logfile
+            config.handlers << Logging::CONSOLE_LOG_HANDLER[] unless cfg.logging.quiet
+
+            if cfg.logging.logfile
+              config.handlers << Logging::FILE_LOG_HANDLER[cfg.logging.logfile]
+            end
           end
         end
 

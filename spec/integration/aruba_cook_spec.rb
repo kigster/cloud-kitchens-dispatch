@@ -7,7 +7,7 @@ module Cloud
   module Kitchens
     module Dispatch
       module App
-        RSpec.describe Commands, type: :arubac do
+        RSpec.describe Commands, type: :aruba do
           include_context 'aruba setup'
 
           context 'help' do
@@ -27,11 +27,26 @@ module Cloud
           end
 
           context 'cook' do
-            let(:args) { ['cook', Fixtures.file] }
+            describe 'output to stdout' do
+              let(:args) { ['cook', Fixtures.file] }
 
-            context 'printed to standard output' do
-              subject { stdout }
-              it { should match /Orders have been imported from/ }
+              context 'printed to standard output' do
+                subject { stdout }
+
+                it { should match /Orders have been imported from/ }
+              end
+            end
+
+            describe 'output to a file' do
+              let(:args) { ['cook', '--logfile', log_file, Fixtures.file] }
+
+              context 'printed to standard output' do
+                subject { log_file }
+
+                its(:path) { is_expected.to be_an_existing_file }
+
+                #   its(:read) { is_expected.to_not be_empty }
+              end
             end
           end
         end

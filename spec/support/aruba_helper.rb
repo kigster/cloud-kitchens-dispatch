@@ -3,7 +3,10 @@
 RSpec.shared_context 'aruba setup', shared_context: :aruba_setup do
   let(:binary) { ::Cloud::Kitchens::Dispatch::BINARY }
   let(:args) { [] }
-  let(:command) { "#{binary} #{args.join(' ')}" }
+  let(:command) { File.basename(binary) + ' ' + args.join(' ') }
+  let(:log_file) { Tempfile.new('kitchen.log') }
+
+  after(:each, type: :aruba) { log_file.close && log_file.unlink }
 
   before { run_command_and_stop(command) }
 

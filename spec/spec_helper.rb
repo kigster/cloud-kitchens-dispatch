@@ -64,7 +64,9 @@ end
 
 Aruba.configure do |config|
   config.command_launcher = :in_process # :spawn is for forking each integration test. Slow!
+  # config.command_launcher = :spawn # :spawn is for forking each integration test. Slow!
   config.main_class       = ::Cloud::Kitchens::Dispatch::App::Launcher
+  config.allow_absolute_paths = true
 end
 
 ::Dir.glob(::File.expand_path('../support/**/*.rb', __FILE__)).each { |f| require(f) }

@@ -13,6 +13,7 @@ require 'cloud/kitchens/dispatch'
 require 'cloud/kitchens/dispatch/ui'
 require 'cloud/kitchens/dispatch/identity'
 require 'cloud/kitchens/dispatch/app/commands'
+require 'cloud/kitchens/dispatch/app/config'
 
 ::Dry::CLI.class_eval do
   def exit(*)
@@ -47,9 +48,7 @@ module Cloud
 
             ::Cloud::Kitchens::Dispatch.stdout = stdout
             ::Cloud::Kitchens::Dispatch.stderr = stderr
-
             ::Cloud::Kitchens::Dispatch.launcher = self
-            ::Cloud::Kitchens::Dispatch.logger.instance_variable_set(:@output, stdout)
 
             self.argv   = argv
             self.stdin  = stdin
@@ -73,16 +72,19 @@ module Cloud
             argv << '--trace' if argv?('-t') && !argv?('--trace')
 
             # noinspection RubyYardParamTypeMatch
-            ::Dry::CLI.new(
-              ::Cloud::Kitchens::Dispatch::App::Commands
-            ).call(arguments: argv,
-                   out: stdout,
-                   err: stderr)
+            ::Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands) \
+                      .call(arguments: argv, out: stdout, err: stderr)
             nil
           rescue StandardError => e
             process_error(e, stream: stderr); e
           ensure
             2.times { stdout.puts } unless test?
+          end
+
+          private
+
+          def app_config
+            Config.config
           end
         end
       end

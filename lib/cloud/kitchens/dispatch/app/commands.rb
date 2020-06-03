@@ -34,6 +34,14 @@ module Cloud
                 end
               end
             end
+
+            def stderr
+              ::Cloud::Kitchens::Dispatch.launcher.stderr
+            end
+
+            def config
+              App::Config.config
+            end
           end
 
           class AbstractOrderCommand < BaseCommand
@@ -58,7 +66,7 @@ module Cloud
                 logging_options_to_config setting, **opts
               end
 
-              ::Cloud::Kitchens::Dispatch.reconfigure_logger!
+              ::Cloud::Kitchens::Dispatch.reconfigure_logger!(App::Config.config)
             end
 
             protected
@@ -96,18 +104,12 @@ module Cloud
               super(**opts)
               return if orders.nil?
 
-              Dispatcher.dispatcher(order_source: orders)
+              Dispatcher[order_source: orders].start!
             rescue Errors::EventPublishingError => e
               stderr.puts
               stderr.puts error_box(e, stream: stderr)
             rescue Errno::ENOENT => e
               stderr.puts error_box("Can't open file: #{orders} — #{e.message}")
-            end
-
-            private
-
-            def stderr
-              ::Cloud::Kitchens::Dispatch.launcher.stderr
             end
           end
 
