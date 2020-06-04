@@ -86,15 +86,15 @@ module Cloud
 
           def default_box_options(title: nil, color: :bright_yellow)
             {
-              width: ui_width,
-              align: :left,
-              border: :light,
+              width:   ui_width,
+              align:   :left,
+              border:  :light,
               padding: [0, 1, 0, 1],
-              style: {
-                fg: color,
+              style:   {
+                fg:     color,
                 border: { fg: color }
               },
-              title: { top_center: title.nil? ? Time.new.to_s : title },
+              title:   { top_center: title.nil? ? Time.new.to_s : title },
             }
           end
 
@@ -111,7 +111,7 @@ module Cloud
           end
 
           def print_header(stream: $stdout)
-            box_opts = box_args(bg: :green, fg: :black)
+            box_opts = box_args(bg: :black, fg: :bright_green)
             stream.puts TTY::Box.frame(
               *Identity::HEADER,
               **box_opts
@@ -159,14 +159,14 @@ module Cloud
                            { top_left: Time.now.to_s, top_right: Identity::VERSION_LABEL }
                          end
 
-            { width: w,
-              title: title_opts,
+            { width:   w,
+              title:   title_opts,
               padding: 1,
-              align: :left,
-              border: :thick,
-              style: {
-                bg: bg,
-                fg: fg,
+              align:   :left,
+              border:  :thick,
+              style:   {
+                bg:     bg,
+                fg:     fg,
                 border: { bg: bg, fg: :white },
               }, }
           end

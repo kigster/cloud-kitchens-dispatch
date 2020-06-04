@@ -7,7 +7,7 @@ module Cloud
       module Identity
         NAME          = "kitchen-ctl"
         LABEL         = "Cloud Kitchens Dispatch"
-        VERSION       = "0.1.1"
+        VERSION       = "0.1.2"
         VERSION_LABEL = "#{LABEL} #{VERSION}"
         COPYRIGHT     = '© 2020 Konstantin Gredeskoul, All rights reserved. '
         LICENSE       = 'MIT License'

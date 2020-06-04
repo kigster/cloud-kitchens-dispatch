@@ -13,23 +13,12 @@ end
 
 SimpleCov.start
 
-require 'cloud/kitchens/dispatch/app/launcher'
 require 'cloud/kitchens/dispatch'
+require 'cloud/kitchens/dispatch/app/config'
+require 'cloud/kitchens/dispatch/app/launcher'
 require 'dry/configurable/test_interface'
 
-module Cloud
-  module Kitchens
-    module Dispatch
-      module App
-        class Config
-          enable_test_interface
-        end
-      end
-    end
-
-    Dispatch.in_test = true
-  end
-end
+Cloud::Kitchens::Dispatch::App::Config.enable_test_interface
 
 require 'cloud/kitchens/dispatch/app/launcher'
 

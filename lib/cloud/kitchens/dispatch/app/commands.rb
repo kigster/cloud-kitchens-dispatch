@@ -1,17 +1,6 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-require 'json'
-require 'dry/cli'
-require 'pastel'
-require 'cloud/kitchens/dispatch'
-require 'cloud/kitchens/dispatch/logging'
-require 'cloud/kitchens/dispatch/identity'
-require 'active_support/core_ext/hash/keys'
-
-require_relative '../order_struct.rb'
-require_relative '../events'
-require_relative '../ui'
+require 'cloud/kitchens/dispatch/app'
 
 module Cloud
   module Kitchens
@@ -29,18 +18,31 @@ module Cloud
               def inherited(base)
                 super(base)
                 base.include(UI)
+                base.include(KitchenHelpers)
                 base.instance_eval do
-                  option :trace, default: nil, desc: 'Print full stack trace, if an error occurs'
+                  option :trace,
+                         default: nil,
+                         type:    :boolean,
+                         desc:    'Print full stack trace, if an error occurs',
+                         aliases: %w[-t]
                 end
               end
             end
 
-            def stderr
-              ::Cloud::Kitchens::Dispatch.launcher.stderr
+            def call(**opts)
+              logging_options_to_config :trace, opts[:trace]
             end
 
-            def config
-              App::Config.config
+            protected
+
+            def logging_options_to_config(option, value)
+              logging_setting = option
+
+              assigner = "#{logging_setting}="
+              return unless value && app_config.logging.respond_to?(assigner)
+
+              info("setting config.#{assigner}#{value}")
+              app_config.logging.send(assigner, value)
             end
           end
 
@@ -54,62 +56,82 @@ module Cloud
                 base.instance_eval do
                   def_delegators ::Cloud::Kitchens::Dispatch, :colorize, :app_config, :logger
 
-                  option :loglevel, values: Logging::DEFAULT_LOGGING_METHODS.map(&:to_s), desc: 'Logging level'
-                  option :logfile, default: nil, desc: 'Log also into the specified file'
-                  option :quiet, default: nil, desc: 'Stops logging to the console'
+                  option :log_level,
+                         values:  Logging::DEFAULT_LOGGING_METHODS.keys.map(&:to_s),
+                         desc:    'Logging level',
+                         aliases: %w[-ll]
+
+                  option :log_file,
+                         default: nil,
+                         desc:    'Log events into the specified file',
+                         aliases: %w[-L]
+
+                  option :log_stderr,
+                         type:    :boolean,
+                         default: false,
+                         desc:    'When true, the console logs go to STDERR',
+                         aliases: %w[-e]
+
+                  option :quiet,
+                         type:    :boolean,
+                         default: false,
+                         desc:    'Enable or disable all logging',
+                         aliases: %w[-q]
                 end
               end
             end
 
             def call(**opts)
-              %i[loglevel logfile quiet trace].each do |setting|
-                logging_options_to_config setting, **opts
+              %i[log_level log_file log_stderr quiet].each do |setting|
+                logging_options_to_config setting, opts[setting]
               end
 
-              ::Cloud::Kitchens::Dispatch.reconfigure_logger!(App::Config.config)
-            end
-
-            protected
-
-            def logging_options_to_config(option, **opts)
-              value = opts[option] unless opts&.empty?
-
-              App::Config.config.logging.send("#{option}=", value) if value
+              ::Cloud::Kitchens::Dispatch.configure_logger(app_config)
             end
           end
 
           class Version < BaseCommand
             desc Dispatch::PASTEL.yellow('Print version')
 
-            def call(*); end
+            def call(*)
+              nil
+            end
           end
 
           class Cook < AbstractOrderCommand
             desc PASTEL.yellow('Open the kitchen to process a given set of orders in a JSON file')
 
             argument :orders,
-                     type: :string,
-                     required: true,
-                     desc: 'File path to the orders.json file'
+                     type:    :string,
+                     default: App::Config.config.order.source,
+                     desc:    'File path to the orders.json file',
+                     aliases: %w[-o --orders]
 
-            option  :rate_per_second,
-                    type: :float,
-                    default: 2,
-                    desc: 'Order ingestion rate per second'
+            option :rate,
+                   type:    :float,
+                   default: App::Config.config.order.rate,
+                   desc:    'Order ingestion rate per second',
+                   aliases: %w[-r]
 
             # noinspection RubyYardParamTypeMatch
-            example(['--orders data.json'].map { |e| PASTEL.bold.green(e) })
+            example(['orders.json --rate 2.0',
+                     '--orders orders.json',].map { |e| PASTEL.bold.green(e) })
 
             def call(orders: nil, **opts)
               super(**opts)
-              return if orders.nil?
+              return if help?
+
+              app_config.order.rate   = opts[:rate] if opts[:rate]
+              app_config.order.source = orders if orders
+
+              info("Starting dispatcher with config:")
+              info(app_config.to_h.pretty_inspect)
 
               Dispatcher[order_source: orders].start!
             rescue Errors::EventPublishingError => e
-              stderr.puts
               stderr.puts error_box(e, stream: stderr)
             rescue Errno::ENOENT => e
-              stderr.puts error_box("Can't open file: #{orders} — #{e.message}")
+              stderr.puts error_box(e, stream: stderr)
             end
           end
 

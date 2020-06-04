@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'aasm'
   spec.add_dependency 'activesupport'
-  spec.add_dependency 'awesome_print'
+  spec.add_dependency 'colored2'
   spec.add_dependency 'dry-auto_inject'
   spec.add_dependency 'dry-cli'
   spec.add_dependency 'dry-configurable'

@@ -68,23 +68,18 @@ module Cloud
               argv << '--help' if argv.empty?
             end
 
-            self.trace = true if argv?('-t')
-            argv << '--trace' if argv?('-t') && !argv?('--trace')
+            # self.trace = true if argv?('-t')
+            # argv << '--trace' if argv?('-t') && !argv?('--trace')
+            argv << '--help' if argv?('help') && !argv?('--trace')
 
             # noinspection RubyYardParamTypeMatch
             ::Dry::CLI.new(::Cloud::Kitchens::Dispatch::App::Commands) \
-                      .call(arguments: argv, out: stdout, err: stderr)
+              .call(arguments: argv, out: stdout, err: stderr)
             nil
           rescue StandardError => e
             process_error(e, stream: stderr); e
           ensure
             2.times { stdout.puts } unless test?
-          end
-
-          private
-
-          def app_config
-            Config.config
           end
         end
       end

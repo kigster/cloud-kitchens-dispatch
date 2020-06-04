@@ -4,19 +4,21 @@ require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 require 'yard'
+require 'colored2'
 
 def shell(*args)
-  puts "running: #{args.join(' ')}"
+  puts "❯ #{args.join(' ').bold.green}"
   system(args.join(' '))
 end
 
-task :permissions do
-  shell('rm -rf pkg/')
+desc 'Clean generated folders such as pkg, log and coverage'
+task :clean do
+  shell('rm -rf pkg/ coverage/ log/')
   shell("chmod -v o+r,g+r * */* */*/* */*/*/* */*/*/*/* */*/*/*/*/*")
   shell("find . -type d -exec chmod o+x,g+x {} \\;")
 end
 
-task build: :permissions
+task build: :clean
 
 YARD::Rake::YardocTask.new(:doc) do |t|
   t.files = %w(lib/**/*.rb exe/*.rb - README.adoc LICENSE.md)

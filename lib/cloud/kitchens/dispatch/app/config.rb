@@ -15,13 +15,18 @@ module Cloud
           end
 
           setting :logging, reader: true do
-            setting :loglevel, default: :debug
-            setting :logfile, default: "log/kitchen-activity-log"
-            setting :quiet, default: false
-            setting :trace, default: false
+            setting :log_level, :debug
+            setting :log_stderr, false
+            setting :log_file, nil
+            setting :quiet, false
+            setting :debug, false
+            setting :trace, false
           end
 
-          setting :incoming_orders_per_second, 2
+          setting :order, reader: true do
+            setting :source, 'orders.json', reader: true
+            setting :rate, 2.0
+          end
         end
       end
     end

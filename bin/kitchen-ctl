@@ -10,7 +10,7 @@ require 'bundler/setup'
 require 'dry/cli'
 
 require "cloud/kitchens/dispatch"
-require "cloud/kitchens/dispatch/app/launcher"
+require "cloud/kitchens/dispatch/app"
 
 code = ::Cloud::Kitchens::Dispatch::App::Launcher.new(ARGV.dup).execute!
 code ||= 0

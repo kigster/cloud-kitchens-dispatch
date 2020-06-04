@@ -2,7 +2,9 @@
 
 require 'pastel'
 require 'stringio'
-require 'cloud/kitchens/dispatch/module_methods'
+
+require 'cloud/kitchens/dispatch/kitchen_helpers'
+require 'cloud/kitchens/dispatch/logging'
 
 module Cloud
   module Kitchens
@@ -17,7 +19,9 @@ module Cloud
       GEM_ROOT = File.expand_path('../', __dir__).freeze
       BINARY   = "#{GEM_ROOT}/bin/kitchen-ctl"
 
-      extend ModuleMethods
+      extend KitchenHelpers
+
+      include Logging
 
       self.stderr = ::StringIO.new
       self.stdout = ::StringIO.new
@@ -27,17 +31,4 @@ module Cloud
 end
 
 require 'cloud/kitchens/dispatch/identity'
-require 'cloud/kitchens/dispatch/logging'
-
-require 'cloud/kitchens/dispatch/app/config'
-require 'cloud/kitchens/dispatch/app/commands'
-require 'cloud/kitchens/dispatch/app/launcher'
-
-require 'cloud/kitchens/dispatch/logging'
-require 'cloud/kitchens/dispatch/events'
-
-require 'cloud/kitchens/dispatch/types'
 require 'cloud/kitchens/dispatch/dispatcher'
-require 'cloud/kitchens/dispatch/order'
-require 'cloud/kitchens/dispatch/kitchen'
-require 'cloud/kitchens/dispatch/courier'

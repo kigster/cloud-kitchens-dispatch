@@ -2,8 +2,12 @@
 
 require 'dry-initializer'
 require 'dry-struct'
-require_relative 'types'
 require 'aasm'
+require 'pp'
+require 'colored2'
+
+require 'cloud/kitchens/dispatch/types'
+require 'cloud/kitchens/dispatch/order_struct'
 
 module Cloud
   module Kitchens
@@ -43,17 +47,19 @@ module Cloud
                     :state_time_log,
                     :decay_rate
 
+        attr_accessor :shelf
+
         def_delegators :@state_time_log, *STATES
 
         # @param [OrderStruct] order_struct
         def initialize(order_struct)
-          @id             = order_struct.id
-          @name           = order_struct.name
-          @temperature    = order_struct.temp
+          @id          = order_struct.id
+          @name        = order_struct.name
+          @temperature = order_struct.temp
           # noinspection RubyResolve
-          @shelf_life     = order_struct.shelfLife.to_f
+          @shelf_life = order_struct.shelfLife.to_f
           # noinspection RubyResolve
-          @decay_rate     = order_struct.decayRate.to_f
+          @decay_rate = order_struct.decayRate.to_f
           @state_time_log = StateChangeTimeLog.new(Time.now.to_f)
         end
 
@@ -76,15 +82,34 @@ module Cloud
         end
 
         def to_s
-          "\n<Order:#{object_id} "\
-            "\n\tid    ->  #{id.green} " \
-            "\n\tname  ->  #{(sprintf '%-20.20s', name).yellow} " \
-            "\n\ttemp  ->  #{(sprintf '%-5s', temperature).yellow} " \
-            "\n\tdecay ->  #{(sprintf '%05.2f', decay_rate).yellow} " \
-            "\n\tshelf ->  #{(sprintf '%03d', shelf_life).yellow} " \
-            "\n\tvalue ->  #{(sprintf '%04.2f', order_value).yellow} " \
-            "\n\tstate ->  #{(sprintf '%-10s', aasm.current_state).red}" \
+          "Order<[#{id}] #{to_h.except('id')}>"
+        end
+
+        def color_inspect
+          indent = "\n  "
+          "\nOrder<[#{id}] "\
+            "#{indent}id          ➔  #{id.green} " \
+            "#{indent}name        ➔  #{(sprintf '%-20.20s', name).green} " \
+            "#{indent}temp        ➔  #{(sprintf '%-5s', temperature).green} " \
+            "#{indent}decay_rate  ➔  #{(sprintf '%05.2f', decay_rate).green} " \
+            "#{indent}shelf_life  ➔  #{(sprintf '%03d', shelf_life).green} " \
+            "#{indent}age(secs)   ➔  #{(sprintf '%04.2f', age).cyan}" \
+            "#{indent}value       ➔  #{(sprintf '%04.2f', order_value).send(order_value > 0 ? :cyan : :red)}" \
+            "#{indent}state       ➔  #{(sprintf '%-10s', aasm.current_state).yellow}" \
             "\n>"
+        end
+
+        def to_h
+          {
+            'id' => id,
+            'name' => name,
+            'shelfType' => temperature,
+            'decay_rate' => decay_rate,
+            'shelf_life' => shelf_life,
+            'order_value' => order_value,
+            'state' => aasm.current_state,
+            'currentShelf' => shelf ? shelf.name : 'N/A',
+          }
         end
 
         aasm do

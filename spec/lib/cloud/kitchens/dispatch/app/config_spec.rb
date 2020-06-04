@@ -17,13 +17,13 @@ module Cloud
 
             before do
               ::Cloud::Kitchens::Dispatch.configure do |config|
-                config.incoming_orders_per_second = orders_per_second
+                config.order.rate = orders_per_second
                 config.total.couriers             = couriers
                 config.total.shelf_capacity       = shelf_capacity
               end
             end
 
-            its(:incoming_orders_per_second) { is_expected.to eq orders_per_second }
+            its(:'order.rate') { is_expected.to eq orders_per_second }
 
             its(:'total.couriers') { is_expected.to eq couriers }
 

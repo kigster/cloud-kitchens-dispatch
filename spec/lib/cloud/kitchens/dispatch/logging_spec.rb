@@ -2,25 +2,30 @@
 
 require 'spec_helper'
 
-module App
-  class Logrande
-    include ::Cloud::Kitchens::Dispatch::Logging
-    class << self
-      include ::Cloud::Kitchens::Dispatch::Logging
+require 'cloud/kitchens/dispatch/app/config'
+
+module Cloud
+  module Kitchens
+    module Dispatch
+      class TestClass
+        include KitchenHelpers
+      end
+
+      RSpec.describe Logging do
+        it { is_expected.to respond_to(:logger) }
+
+        context 'class methods' do
+          subject(:logger) { TestClass.logger }
+
+          it { is_expected.to respond_to(:debug) }
+        end
+
+        context 'instance methods' do
+          subject(:logger) { TestClass.new.logger }
+
+          it { is_expected.to respond_to(:debug) }
+        end
+      end
     end
-  end
-end
-
-RSpec.describe ::Cloud::Kitchens::Dispatch::Logging do
-  context 'class methods' do
-    subject(:logger) { App::Logrande.logger }
-
-    it { is_expected.to respond_to(:debug) }
-  end
-
-  context 'instance methods' do
-    subject(:logger) { App::Logrande.new.logger }
-
-    it { is_expected.to respond_to(:debug) }
   end
 end

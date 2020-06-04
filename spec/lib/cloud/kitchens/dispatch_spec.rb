@@ -8,7 +8,8 @@ module Cloud
       context '.config' do
         subject { described_class.app_config }
 
-        its(:incoming_orders_per_second) { is_expected.to eq 2 }
+        its(:'order.rate') { is_expected.to eq 2 }
+        its(:'logging.log_level') { is_expected.to eq :debug }
       end
     end
   end

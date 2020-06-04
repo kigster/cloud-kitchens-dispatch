@@ -3,11 +3,13 @@
 require 'forwardable'
 
 require 'cloud/kitchens/dispatch'
-require 'cloud/kitchens/dispatch/types'
-require 'cloud/kitchens/dispatch/order'
-require 'cloud/kitchens/dispatch/kitchen'
 require 'cloud/kitchens/dispatch/events'
 require 'cloud/kitchens/dispatch/ui'
+
+require 'cloud/kitchens/dispatch/courier'
+require 'cloud/kitchens/dispatch/kitchen'
+require 'cloud/kitchens/dispatch/order'
+require 'cloud/kitchens/dispatch/types'
 
 module Cloud
   module Kitchens

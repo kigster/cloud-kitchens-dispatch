@@ -3,7 +3,7 @@
 require 'dry-initializer'
 require 'dry-struct'
 require_relative 'types'
-require 'awesome_print'
+require 'pp'
 
 module Cloud
   module Kitchens
@@ -20,7 +20,7 @@ module Cloud
         attribute :decayRate, Types::Float
 
         def to_s
-          "\n" + awesome_inspect + "\n"
+          "\n" + pretty_inspect + "\n"
         end
 
         alias inspect to_s
